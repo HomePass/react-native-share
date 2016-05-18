@@ -34,24 +34,26 @@ RCT_EXPORT_METHOD(file:(NSDictionary *)options :(RCTResponseSenderBlock)callback
 }
 
 - (void)showActivityControllerWithItems:(NSArray *)items {
-    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
 
-    UIViewController *root = [[[RCTSharedApplication() delegate] window] rootViewController];
+        UIViewController *root = [[[RCTSharedApplication() delegate] window] rootViewController];
 
-    while (root.presentedViewController != nil) {
-        root = root.presentedViewController;
-    }
+        while (root.presentedViewController != nil) {
+            root = root.presentedViewController;
+        }
 
-    //if iPhone
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [root presentViewController:activityVC animated:YES completion:nil];
-    }
-    //if iPad
-    else {
-        // Change Rect to position Popover
-        UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:activityVC];
-        [popup presentPopoverFromRect:CGRectMake(root.view.frame.size.width/2, root.view.frame.size.height/4, 0, 0)inView:root.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+        //if iPhone
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            [root presentViewController:activityVC animated:YES completion:nil];
+        }
+        //if iPad
+        else {
+            // Change Rect to position Popover
+            UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:activityVC];
+            [popup presentPopoverFromRect:CGRectMake(root.view.frame.size.width/2, root.view.frame.size.height/4, 0, 0)inView:root.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        }
+    });
 }
 
 @end
