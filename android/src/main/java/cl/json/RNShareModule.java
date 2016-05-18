@@ -37,6 +37,20 @@ public class RNShareModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void file(ReadableMap options, Callback callback) {
+      // TODO: This
+    // Intent shareIntent = createShareIntent(options);
+    // Intent intentChooser = createIntentChooser(options, shareIntent);
+    //
+    // try {
+    //   this.reactContext.startActivity(intentChooser);
+    //   callback.invoke("OK");
+    // } catch (ActivityNotFoundException ex) {
+    //   callback.invoke("not_available");
+    // }
+  }
+
   /**
    * Creates an {@link Intent} to be shared from a set of {@link ReadableMap} options
    * @param {@link ReadableMap} options
