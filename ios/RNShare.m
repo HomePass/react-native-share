@@ -3,19 +3,22 @@
 #import "RCTConvert.h"
 #import <HomepassCommon/RCTUtils.h>
 
+@import Social;
+
 @implementation RNShare
 
 RCT_EXPORT_MODULE()
 
+#pragma mark - RN Methods
+
 RCT_EXPORT_METHOD(open:(NSDictionary *)options :(RCTResponseSenderBlock)callback)
 {
     // Your implementation here
-    NSString *shareText = [RCTConvert NSString:options[@"share_text"]];
-    NSString *shareUrl = [RCTConvert NSString:options[@"share_URL"]];
-    //some app extension need a NSURL or UIImage Object to share
-    NSURL *cardUrl = [NSURL URLWithString:shareUrl];
+    NSString *shareText = [RCTConvert NSString:options[@"text"]];
+    NSString *shareUrl = [RCTConvert NSString:options[@"url"]];
+    NSURL *actualUrl = [NSURL URLWithString:shareUrl];
 
-    [self showActivityControllerWithItems:@[ shareText, shareUrl, cardUrl ]];
+    [self showActivityControllerWithItems:@[ shareText, shareUrl, actualUrl ]];
 }
 
 RCT_EXPORT_METHOD(file:(NSDictionary *)options :(RCTResponseSenderBlock)callback)
@@ -32,6 +35,58 @@ RCT_EXPORT_METHOD(file:(NSDictionary *)options :(RCTResponseSenderBlock)callback
 
     [self showActivityControllerWithItems:@[ tmpFileURL ]];
 }
+
+RCT_EXPORT_METHOD(facebook:(NSDictionary *)options :(RCTResponseSenderBlock)callback)
+{
+    // Your implementation here
+    NSString *shareText = [RCTConvert NSString:options[@"text"]];
+    NSString *shareUrl = [RCTConvert NSString:options[@"url"]];
+    NSURL *actualUrl = [NSURL URLWithString:shareUrl];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *root = [[[RCTSharedApplication() delegate] window] rootViewController];
+
+        while (root.presentedViewController != nil) {
+            root = root.presentedViewController;
+        }
+
+        SLComposeViewController *viewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+        [viewController setInitialText:shareText];
+
+        if (actualUrl) {
+            [viewController addURL:actualUrl];
+        }
+
+        [root presentViewController:viewController animated:YES completion:nil];
+    });
+}
+
+RCT_EXPORT_METHOD(twitter:(NSDictionary *)options :(RCTResponseSenderBlock)callback)
+{
+    // Your implementation here
+    NSString *shareText = [RCTConvert NSString:options[@"text"]];
+    NSString *shareUrl = [RCTConvert NSString:options[@"url"]];
+    NSURL *actualUrl = [NSURL URLWithString:shareUrl];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *root = [[[RCTSharedApplication() delegate] window] rootViewController];
+
+        while (root.presentedViewController != nil) {
+            root = root.presentedViewController;
+        }
+
+        SLComposeViewController *viewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        [viewController setInitialText:shareText];
+
+        if (actualUrl) {
+            [viewController addURL:actualUrl];
+        }
+
+        [root presentViewController:viewController animated:YES completion:nil];
+    });
+}
+
+#pragma mark - Native Methods
 
 - (void)showActivityControllerWithItems:(NSArray *)items {
     dispatch_async(dispatch_get_main_queue(), ^{
